@@ -1,0 +1,14 @@
+
+.vsconfig
+*.ide
+*.ide-shm
+.vs/gamejam2022/v15/.suo
+.vs/gamejam2022/v15/Server/sqlite3/db.lock
+.vs/gamejam2022/v15/Server/sqlite3/storage.ide-wal
+/obj
+/Logs
+/Library
+/Temp
+Assembly-CSharp.csproj
+gamejam2022.sln
+UserSettings/EditorUserSettings.asset
