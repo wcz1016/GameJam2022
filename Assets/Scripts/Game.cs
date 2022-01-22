@@ -22,7 +22,6 @@ public class Game : MonoBehaviour
         initCubes();
         initArrows();
         CubeManager.Instance.init();
-        
     }
 
     void initArrows()
@@ -40,11 +39,11 @@ public class Game : MonoBehaviour
            farthestX + cubePrefabScale.x,  farthestY + cubePrefabScale.y, nearestZ + cubePrefabScale.z
             ), Quaternion.identity);
         leftArrow.GetComponent<Arrow>().farthestPostion = new Vector3(
-            farthestX + cubePrefabScale.x, farthestY + cubePrefabScale.y, farthestZ + cubePrefabScale.z
+            farthestX + cubePrefabScale.x, farthestY + cubePrefabScale.y, farthestZ
             );
 
         GameObject frontArrow = Instantiate(frontArrowPrefab, new Vector3(
-            nearestX, farthestY + cubePrefabScale.y, farthestZ
+            nearestX - cubePrefabScale.x, farthestY + cubePrefabScale.y, farthestZ
             ), Quaternion.identity);
         frontArrow.GetComponent<Arrow>().farthestPostion = new Vector3(
             farthestX, farthestY + cubePrefabScale.y, farthestZ

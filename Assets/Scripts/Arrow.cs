@@ -9,10 +9,11 @@ class Arrow : MonoBehaviour
   
     public Direction direction;
     public Vector3 farthestPostion;
+    private Vector3 initialPosition;
 
     private bool dragging = false;
     private float distance;
-    private Vector3 initialPosition;
+    
     private GameObject[] allArrows;
     private Vector3 directionVector;
 
