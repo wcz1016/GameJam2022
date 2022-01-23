@@ -22,6 +22,8 @@ public class CubeManager : MonoBehaviour
 
     public HashSet<Vector2Int> rightAnswerPositions;
 
+    public int usedNum;
+
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -42,6 +44,7 @@ public class CubeManager : MonoBehaviour
         leftAnswerPositions = new HashSet<Vector2Int>();
         rightAnswerPositions = new HashSet<Vector2Int>();
         leftAnswerPositions.Add(new Vector2Int(0,0));
+        usedNum = 0;
     }
 
     public void adjustCubesVisibility()

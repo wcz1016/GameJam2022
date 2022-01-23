@@ -6,6 +6,8 @@ using DG.Tweening;
 
 public class UI : MonoBehaviour
 {
+    public Text usedNum;
+
     public void checkIsCorrect()
     {
         if (CubeManager.Instance.isCorrect())
@@ -15,5 +17,10 @@ public class UI : MonoBehaviour
             Debug.Log("´íÎó");
         }
                 
+    }
+
+    public void setUsedNum()
+    {
+        usedNum.text = CubeManager.Instance.usedNum.ToString();
     }
 }

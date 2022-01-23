@@ -12,3 +12,6 @@
 Assembly-CSharp.csproj
 gamejam2022.sln
 UserSettings/EditorUserSettings.asset
+GameJam2022/
+Assembly-CSharp-Editor.csproj
+*.csproj
