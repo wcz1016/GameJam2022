@@ -109,6 +109,6 @@ public class CubeManager : MonoBehaviour
         leftSelectedPositions.Clear();
         rightSelectedPositions.Clear();
         usedNum = 0;
-        GameObject.Find("Canvas").GetComponent<UI>().setUsedNum();
+        GameObject.FindGameObjectWithTag("UI").GetComponent<UI>().setUsedNum();
     }
 }

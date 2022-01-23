@@ -37,7 +37,7 @@ public class Cube : MonoBehaviour
             CubeManager.Instance.removeRightPos(new Vector2Int(xPos, yPos));
             CubeManager.Instance.usedNum -= 1;
         }
-        GameObject.Find("Canvas").GetComponent<UI>().setUsedNum();
+        GameObject.FindGameObjectWithTag("UI").GetComponent<UI>().setUsedNum();
     }
 
     public void selectCube()

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Arrow
   - Cube
+  - UI
   layers:
   - Default
   - TransparentFX
