@@ -94,34 +94,24 @@ public class Game : MonoBehaviour
     void initShadow()
     {
         // 左侧答案投影
-        for (int z = 0; z < cubeNumber; z++)
+        foreach(Vector2Int vec in CubeManager.Instance.leftAnswerPositions)
         {
-            for (int y = 0; y < cubeNumber; y++)
-            {
-               if (CubeManager.Instance.leftAnswerPositions.Contains(new Vector2Int(z, y)))
-                {
-                    Instantiate(shadowPrefab, new Vector3(
+            int z = vec.x, y = vec.y;
+            Instantiate(shadowPrefab, new Vector3(
                         leftWall.transform.position.x - leftWall.transform.localScale.x / 2 - 0.01f,
                         nearestY + y * shadowPrefab.transform.localScale.y,
                         farthestZ + z * shadowPrefab.transform.localScale.z
                        ), Quaternion.identity);
-                }
-            }
         }
         // 右侧答案投影
-        for (int x = 0; x < cubeNumber; x++)
+        foreach (Vector2Int vec in CubeManager.Instance.rightAnswerPositions)
         {
-            for (int y = 0; y < cubeNumber; y++)
-            {
-                if (CubeManager.Instance.leftAnswerPositions.Contains(new Vector2Int(x, y)))
-                {
-                    Instantiate(shadowPrefab, new Vector3(
-                        nearestX + x * shadowPrefab.transform.localScale.x,
+            int x = vec.x, y = vec.y;
+            Instantiate(shadowPrefab, new Vector3(
+                        nearestX + x * shadowPrefab.transform.localScale.z,
                         nearestY + y * shadowPrefab.transform.localScale.y,
                         rightWall.transform.position.z + rightWall.transform.localScale.z / 2 + 0.01f
                         ), Quaternion.Euler(0, 90, 0));
-                }
-            }
         }
     }
 }

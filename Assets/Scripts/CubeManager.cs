@@ -76,19 +76,22 @@ public class CubeManager : MonoBehaviour
     }
 
     public bool isCorrect()
-    {
+    { 
         // debugPoss();
-        return leftSelectedPositions.SetEquals(leftAnswerPositions)
-             && rightSelectedPositions.SetEquals(rightAnswerPositions);
+        return leftSelectedPositions.IsSupersetOf(leftAnswerPositions)
+             && rightSelectedPositions.IsSupersetOf(rightAnswerPositions);
+        
     }
 
     void debugPoss()
     {
-        foreach(Vector2Int vec in leftSelectedPositions)
+        Debug.Log("left");
+        foreach (Vector2Int vec in leftSelectedPositions)
         {
             Debug.Log(vec);
         }
-        foreach(Vector2Int vec in rightSelectedPositions)
+        Debug.Log("right");
+        foreach (Vector2Int vec in rightSelectedPositions)
         {
             Debug.Log(vec);
         }
