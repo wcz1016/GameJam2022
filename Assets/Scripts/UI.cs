@@ -14,12 +14,13 @@ public class UI : MonoBehaviour
     {
         if (CubeManager.Instance.isCorrect())
         {
+
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-            Debug.Log("正确");
-        } else {
-            Debug.Log("错误");
         }
-                
+        else
+        {
+            // 时间原因提交失败的话没有任何提示，如果这里能有提示音或者 UI 的提示就好了
+        }      
     }
 
     public void setUsedNum()

@@ -940,7 +940,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 365336279}
-  m_LocalRotation: {x: -0.0066645104, y: 0.9303061, z: 0.01692459, w: 0.3663329}
+  m_LocalRotation: {x: -0.0066645113, y: 0.9303061, z: 0.016924592, w: 0.3663329}
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1368,7 +1368,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ac74ae2b81be9b747bd688a5455b73ae, type: 2}
+  - {fileID: 2100000, guid: 2f31b17ad2ca2704ba04b168436421c7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1723,7 +1723,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 17a35ece997fe394ba32ed1db90d4d0b, type: 2}
+  - {fileID: 2100000, guid: 42a8ee30c8ae13848be4cfc2d04965d4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2716,7 +2716,7 @@ MonoBehaviour:
   leftWall: {fileID: 168775484}
   rightWall: {fileID: 149846755}
   cubeNumber: 11
-  shadowMap: {fileID: 11400000, guid: 95436d65839ab1847880f8769882d7fb, type: 2}
+  shadowMap: {fileID: 11400000, guid: 18d82a7a0ff236347a0e7eb3da7be5ec, type: 2}
   leftImage: {fileID: 854894679}
   rightImage: {fileID: 766470088}
 --- !u!114 &1698095291

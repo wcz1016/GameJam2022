@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
 {
@@ -17,6 +19,9 @@ public class Game : MonoBehaviour
     public int cubeNumber = 4;
 
     public ShadowMap shadowMap;
+
+    public GameObject leftImage;
+    public GameObject rightImage;
 
     private Vector3 cubePrefabScale;
     private Vector3 initialPositon;
@@ -114,4 +119,18 @@ public class Game : MonoBehaviour
                         ), Quaternion.Euler(0, 90, 0));
         }
     }
+
+    void finishLevel()
+    {
+        leftImage.gameObject.GetComponent<Renderer>().material.DOFade(1, 2);
+        rightImage.gameObject.GetComponent<Renderer>().material.DOFade(1, 2);
+        loadNextScene();
+    }
+
+    IEnumerator loadNextScene()
+    {
+        yield return new WaitForSeconds(2);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+
 }

@@ -1368,7 +1368,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ac74ae2b81be9b747bd688a5455b73ae, type: 2}
+  - {fileID: 2100000, guid: df11d89ba63bdff49a3bde437e5194d6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1723,7 +1723,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 17a35ece997fe394ba32ed1db90d4d0b, type: 2}
+  - {fileID: 2100000, guid: 039eb763875a23d4c8416501f6e6fc6f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2716,7 +2716,7 @@ MonoBehaviour:
   leftWall: {fileID: 168775484}
   rightWall: {fileID: 149846755}
   cubeNumber: 11
-  shadowMap: {fileID: 11400000, guid: 95436d65839ab1847880f8769882d7fb, type: 2}
+  shadowMap: {fileID: 11400000, guid: 73c6fd9ac5f4c9247baed237d527d922, type: 2}
   leftImage: {fileID: 854894679}
   rightImage: {fileID: 766470088}
 --- !u!114 &1698095291
