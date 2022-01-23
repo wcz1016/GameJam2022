@@ -99,4 +99,16 @@ public class CubeManager : MonoBehaviour
             Debug.Log(vec);
         }
     }
+
+    public void resetCubes()
+    {
+        foreach(GameObject cube in allCubes)
+        {
+            cube.GetComponent<Cube>().deselectCube();
+        }
+        leftSelectedPositions.Clear();
+        rightSelectedPositions.Clear();
+        usedNum = 0;
+        GameObject.Find("Canvas").GetComponent<UI>().setUsedNum();
+    }
 }

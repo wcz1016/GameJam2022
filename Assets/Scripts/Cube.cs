@@ -17,25 +17,40 @@ public class Cube : MonoBehaviour
     {
         defaultColor = gameObject.GetComponent<Renderer>().material.color;
     }
+
+
     private void OnMouseDown()
     {
-        active = !active;
-        if (active)
+        if (GameObject.Find("MenuPanel"))
+            return;
+        if (!active)
         {
-            gameObject.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.On;
-            gameObject.GetComponent<Renderer>().material.color = Color.red;
+            selectCube();
             CubeManager.Instance.addLeftPos(new Vector2Int(zPos, yPos));
             CubeManager.Instance.addRightPos(new Vector2Int(xPos, yPos));
             CubeManager.Instance.usedNum += 1;
         }
         else
         {
-            gameObject.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            gameObject.GetComponent<Renderer>().material.color = defaultColor;
+            deselectCube();
             CubeManager.Instance.removeLeftPos(new Vector2Int(zPos, yPos));
             CubeManager.Instance.removeRightPos(new Vector2Int(xPos, yPos));
             CubeManager.Instance.usedNum -= 1;
         }
         GameObject.Find("Canvas").GetComponent<UI>().setUsedNum();
+    }
+
+    public void selectCube()
+    {
+        active = true;
+        gameObject.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.On;
+        gameObject.GetComponent<Renderer>().material.color = Color.red;
+    }
+
+    public void deselectCube()
+    {
+        active = false;
+        gameObject.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+        gameObject.GetComponent<Renderer>().material.color = defaultColor;
     }
 }
