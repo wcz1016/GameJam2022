@@ -14,9 +14,9 @@ public class CubeManager : MonoBehaviour
 
     private GameObject[] allCubes;
 
-    private HashSet<Vector2Int> leftSelectedPositions;
+    private List<Vector2Int> leftSelectedPositions;
 
-    private HashSet<Vector2Int> rightSelectedPositions;
+    private List<Vector2Int> rightSelectedPositions;
 
     public HashSet<Vector2Int> leftAnswerPositions;
 
@@ -39,8 +39,8 @@ public class CubeManager : MonoBehaviour
     public void init()
     {
         allCubes = GameObject.FindGameObjectsWithTag("Cube");
-        leftSelectedPositions = new HashSet<Vector2Int>();
-        rightSelectedPositions = new HashSet<Vector2Int>();
+        leftSelectedPositions = new List<Vector2Int>();
+        rightSelectedPositions = new List<Vector2Int>();
         leftAnswerPositions = new HashSet<Vector2Int>();
         rightAnswerPositions = new HashSet<Vector2Int>();
         leftAnswerPositions.Add(new Vector2Int(0,0));
@@ -79,22 +79,37 @@ public class CubeManager : MonoBehaviour
     }
 
     public bool isCorrect()
-    { 
-        // debugPoss();
-        return leftSelectedPositions.IsSupersetOf(leftAnswerPositions)
-             && rightSelectedPositions.IsSupersetOf(rightAnswerPositions);
+    {
+        return leftAnswerPositions.SetEquals(new HashSet<Vector2Int>(leftSelectedPositions))
+            && rightAnswerPositions.SetEquals(new HashSet<Vector2Int>(rightSelectedPositions));
         
     }
 
     void debugPoss()
     {
         Debug.Log("left");
-        foreach (Vector2Int vec in leftSelectedPositions)
+        HashSet<Vector2Int> leftSelectedPostionSet = new HashSet<Vector2Int>(leftSelectedPositions);
+        foreach (Vector2Int vec in leftSelectedPostionSet)
         {
             Debug.Log(vec);
         }
         Debug.Log("right");
-        foreach (Vector2Int vec in rightSelectedPositions)
+        HashSet<Vector2Int> rightSelectedPostionSet = new HashSet<Vector2Int>(rightSelectedPositions);
+        foreach (Vector2Int vec in rightSelectedPostionSet)
+        {
+            Debug.Log(vec);
+        }
+    }
+    void debugAnswers()
+    {
+        Debug.Log("left");
+        foreach (Vector2Int vec in leftAnswerPositions)
+        {
+            Debug.Log(vec);
+        }
+        Debug.Log("right");
+    
+        foreach (Vector2Int vec in rightAnswerPositions)
         {
             Debug.Log(vec);
         }

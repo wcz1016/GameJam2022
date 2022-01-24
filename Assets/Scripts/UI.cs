@@ -9,17 +9,18 @@ public class UI : MonoBehaviour
 {
     public Text usedNum;
     public GameObject menuPanel;
+    
 
     public void checkIsCorrect()
     {
         if (CubeManager.Instance.isCorrect())
         {
-
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            GameObject.Find("Main Camera").GetComponent<Game>().finishLevel();
         }
         else
         {
             // 时间原因提交失败的话没有任何提示，如果这里能有提示音或者 UI 的提示就好了
+            Debug.Log("wrong");
         }      
     }
 

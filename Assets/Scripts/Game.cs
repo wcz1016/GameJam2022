@@ -120,11 +120,11 @@ public class Game : MonoBehaviour
         }
     }
 
-    void finishLevel()
+    public void finishLevel()
     {
         leftImage.gameObject.GetComponent<Renderer>().material.DOFade(1, 2);
         rightImage.gameObject.GetComponent<Renderer>().material.DOFade(1, 2);
-        loadNextScene();
+        StartCoroutine(loadNextScene());
     }
 
     IEnumerator loadNextScene()
