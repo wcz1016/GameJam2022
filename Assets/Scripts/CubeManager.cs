@@ -119,11 +119,11 @@ public class CubeManager : MonoBehaviour
     {
         foreach(GameObject cube in allCubes)
         {
-            cube.GetComponent<Cube>().deselectCube();
+            cube.GetComponent<Cube>().UnselectSelf();
         }
         leftSelectedPositions.Clear();
         rightSelectedPositions.Clear();
         usedNum = 0;
-        GameObject.FindGameObjectWithTag("UI").GetComponent<UI>().setUsedNum();
+        UI.Instance.SetUsedNum();
     }
 }

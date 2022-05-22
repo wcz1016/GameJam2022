@@ -6,29 +6,62 @@ using UnityEngine.SceneManagement;
 
 public class GameStartMenu : MonoBehaviour
 {
-    public GameObject chooseLevelPanel;
-    public void startGame()
+    [SerializeField]
+    private GameObject _chooseLevelPanel;
+
+    [SerializeField]
+    private float _buttonSoundLastTime;
+
+    private AudioSource _audioSource;
+
+    void Start()
     {
-        SceneManager.LoadScene("Level0");
+        _audioSource = GetComponent<AudioSource>();
     }
 
-    public void exitGame()
+    public void StartGame()
     {
+        StartCoroutine(ChooseLevelCoroutine(1));
+    }
+
+    public void ExitGame()
+    {
+        StartCoroutine(ExitGameCoroutine());
+    }
+
+    public void OpenLevelPanel()
+    {
+        PlayButtonSound();
+        _chooseLevelPanel.SetActive(true);
+    }
+
+    public void CloseLevelPanel()
+    {
+        PlayButtonSound();
+        _chooseLevelPanel.SetActive(false);
+    }
+
+    public void ChooseLevel(int levelIndex)
+    {
+        StartCoroutine(ChooseLevelCoroutine(levelIndex));    
+    }
+
+    private IEnumerator ChooseLevelCoroutine(int levelIndex)
+    {
+        PlayButtonSound();
+        yield return new WaitForSeconds(_buttonSoundLastTime);
+        SceneManager.LoadScene(levelIndex + 1);
+    }
+
+    private IEnumerator ExitGameCoroutine()
+    {
+        PlayButtonSound();
+        yield return new WaitForSeconds(_buttonSoundLastTime);
         Application.Quit();
     }
 
-    public void openLevelPanel()
+    private void PlayButtonSound()
     {
-        chooseLevelPanel.SetActive(true);
-    }
-
-    public void closeLevelPanel()
-    {
-        chooseLevelPanel.SetActive(false);
-    }
-
-    public void chooseLevel(int levelIndex)
-    {
-        SceneManager.LoadScene(levelIndex + 1);
+        _audioSource.Play();
     }
 }

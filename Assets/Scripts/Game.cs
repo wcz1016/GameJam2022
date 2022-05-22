@@ -83,9 +83,9 @@ public class Game : MonoBehaviour
                         initialPositon.y + (y - cubeNumber / 2) * cubePrefabScale.y,
                         initialPositon.z + (z - cubeNumber / 2) * cubePrefabScale.z
                     ), Quaternion.identity);
-                    cube.GetComponent<Cube>().xPos = x;
-                    cube.GetComponent<Cube>().yPos = y;
-                    cube.GetComponent<Cube>().zPos = z;
+                    cube.GetComponent<Cube>().XPos = x;
+                    cube.GetComponent<Cube>().YPos = y;
+                    cube.GetComponent<Cube>().ZPos = z;
                 }
             }
         }

@@ -7,11 +7,29 @@ using DG.Tweening;
 
 public class UI : MonoBehaviour
 {
-    public Text usedNum;
-    public GameObject menuPanel;
-    
+    public static UI Instance;
 
-    public void checkIsCorrect()
+    public GameObject MenuPanel;
+
+    [SerializeField]
+    private Text _usedNum;
+
+    [SerializeField]
+    private float _buttonSoundLastTime;
+
+    private AudioSource _audioSource;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+
+        _audioSource = GetComponent<AudioSource>();
+    }
+
+    public void CheckIsCorrect()
     {
         if (CubeManager.Instance.isCorrect())
         {
@@ -24,29 +42,44 @@ public class UI : MonoBehaviour
         }      
     }
 
-    public void setUsedNum()
+    public void SetUsedNum()
     {
-        usedNum.text = CubeManager.Instance.usedNum.ToString();
+        _usedNum.text = CubeManager.Instance.usedNum.ToString();
     }
 
-    public void openMenuPanel()
+    public void OpenMenuPanel()
     {
-        menuPanel.SetActive(true);
+        PlayButtonSound();
+        MenuPanel.SetActive(true);
     }
 
-    public void closeMenuPanel()
+    public void CloseMenuPanel()
     {
-        menuPanel.SetActive(false);
+        PlayButtonSound();
+        MenuPanel.SetActive(false);
     }
 
-    public void goBackToMainMenu()
+    public void GoBackToMainMenu()
     {
+        StartCoroutine(GoBackToMainMenuCoroutine());
+    }
+
+    private IEnumerator GoBackToMainMenuCoroutine()
+    {
+        PlayButtonSound();
+        yield return new WaitForSeconds(_buttonSoundLastTime);
         SceneManager.LoadScene(0);
     }
 
-    public void resetCubes()
+    public void ResetCubes()
     {
+        PlayButtonSound();
         CubeManager.Instance.resetCubes();
-        closeMenuPanel();
+        CloseMenuPanel();
+    }
+
+    private void PlayButtonSound()
+    {
+        _audioSource.Play();
     }
 }

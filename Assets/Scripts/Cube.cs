@@ -5,52 +5,67 @@ using UnityEngine.Rendering;
 
 public class Cube : MonoBehaviour
 {
-    public int xPos;
-    public int yPos;
-    public int zPos;
+    public int XPos;
+    public int YPos;
+    public int ZPos;
 
-    private bool active = false;
+    [SerializeField]
+    private AudioClip _selectSound;
+    [SerializeField]
+    private AudioClip _unselectSound;
 
-    private Color defaultColor;
+    private bool _active = false;
+
+    private Color _defaultColor;
+
+    private AudioSource _audioSource;
 
     private void Start()
     {
-        defaultColor = gameObject.GetComponent<Renderer>().material.color;
+        _defaultColor = GetComponent<Renderer>().material.color;
+        _audioSource = GetComponent<AudioSource>();
     }
 
 
     private void OnMouseDown()
     {
-        if (GameObject.Find("MenuPanel"))
+        if (UI.Instance.MenuPanel.activeSelf)
             return;
-        if (!active)
+
+        if (!_active)
         {
-            selectCube();
-            CubeManager.Instance.addLeftPos(new Vector2Int(zPos, yPos));
-            CubeManager.Instance.addRightPos(new Vector2Int(xPos, yPos));
+            SelectSelf();
+            _audioSource.PlayOneShot(_selectSound);
+            // TODO: CubeManager.AddCube(int xPos, yPos, zPos)
+            CubeManager.Instance.addLeftPos(new Vector2Int(ZPos, YPos));
+            CubeManager.Instance.addRightPos(new Vector2Int(XPos, YPos));
             CubeManager.Instance.usedNum += 1;
         }
         else
         {
-            deselectCube();
-            CubeManager.Instance.removeLeftPos(new Vector2Int(zPos, yPos));
-            CubeManager.Instance.removeRightPos(new Vector2Int(xPos, yPos));
+            UnselectSelf();
+            _audioSource.PlayOneShot(_unselectSound);
+            CubeManager.Instance.removeLeftPos(new Vector2Int(ZPos, YPos));
+            CubeManager.Instance.removeRightPos(new Vector2Int(XPos, YPos));
             CubeManager.Instance.usedNum -= 1;
         }
-        GameObject.FindGameObjectWithTag("UI").GetComponent<UI>().setUsedNum();
+
+        UI.Instance.SetUsedNum();
     }
 
-    public void selectCube()
+    private void SelectSelf()
     {
-        active = true;
-        gameObject.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.On;
-        gameObject.GetComponent<Renderer>().material.color = Color.red;
+        _active = true;
+        
+        GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.On;
+        GetComponent<Renderer>().material.color = Color.red;
     }
 
-    public void deselectCube()
+    public void UnselectSelf()
     {
-        active = false;
+        _active = false;
+        
         gameObject.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-        gameObject.GetComponent<Renderer>().material.color = defaultColor;
+        gameObject.GetComponent<Renderer>().material.color = _defaultColor;
     }
 }
