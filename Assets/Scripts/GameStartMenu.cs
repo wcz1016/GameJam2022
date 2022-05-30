@@ -21,7 +21,7 @@ public class GameStartMenu : MonoBehaviour
 
     public void StartGame()
     {
-        StartCoroutine(ChooseLevelCoroutine(1));
+        StartCoroutine(ChooseLevelCoroutine(0));
     }
 
     public void ExitGame()

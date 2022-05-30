@@ -4,10 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using System;
 
 public class UI : MonoBehaviour
 {
     public static UI Instance;
+
+    public event Action<bool> OnCheckCubes;
 
     public GameObject MenuPanel;
 
@@ -30,16 +33,9 @@ public class UI : MonoBehaviour
     }
 
     public void CheckIsCorrect()
-    {
-        if (CubeManager.Instance.isCorrect())
-        {
-            GameObject.Find("Main Camera").GetComponent<Game>().finishLevel();
-        }
-        else
-        {
-            // 时间原因提交失败的话没有任何提示，如果这里能有提示音或者 UI 的提示就好了
-            Debug.Log("wrong");
-        }      
+    {      
+        PlayButtonSound();
+        StartCoroutine(CheckIsCorrectCorotine());
     }
 
     public void SetUsedNum()
@@ -61,12 +57,12 @@ public class UI : MonoBehaviour
 
     public void GoBackToMainMenu()
     {
+        PlayButtonSound();
         StartCoroutine(GoBackToMainMenuCoroutine());
     }
 
     private IEnumerator GoBackToMainMenuCoroutine()
     {
-        PlayButtonSound();
         yield return new WaitForSeconds(_buttonSoundLastTime);
         SceneManager.LoadScene(0);
     }
@@ -81,5 +77,12 @@ public class UI : MonoBehaviour
     private void PlayButtonSound()
     {
         _audioSource.Play();
+    }
+
+    private IEnumerator CheckIsCorrectCorotine()
+    {
+        yield return new WaitForSeconds(_buttonSoundLastTime);
+        bool isCorrect = CubeManager.Instance.isCorrect();
+        OnCheckCubes.Invoke(isCorrect);
     }
 }

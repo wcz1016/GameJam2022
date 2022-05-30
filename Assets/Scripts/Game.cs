@@ -42,6 +42,7 @@ public class Game : MonoBehaviour
         CubeManager.Instance.init();
         initAnswer();
         initShadow();
+        UI.Instance.OnCheckCubes += FinishLevelIfCorrect;
     }
 
     void initArrows()
@@ -120,11 +121,14 @@ public class Game : MonoBehaviour
         }
     }
 
-    public void finishLevel()
+    public void FinishLevelIfCorrect(bool isCorrect)
     {
-        leftImage.gameObject.GetComponent<Renderer>().material.DOFade(1, 2);
-        rightImage.gameObject.GetComponent<Renderer>().material.DOFade(1, 2);
-        StartCoroutine(loadNextScene());
+        if (isCorrect)
+        {
+            leftImage.gameObject.GetComponent<Renderer>().material.DOFade(1, 2);
+            rightImage.gameObject.GetComponent<Renderer>().material.DOFade(1, 2);
+            StartCoroutine(loadNextScene());
+        }
     }
 
     IEnumerator loadNextScene()
