@@ -58,13 +58,19 @@ public class UI : MonoBehaviour
     public void GoBackToMainMenu()
     {
         PlayButtonSound();
-        StartCoroutine(GoBackToMainMenuCoroutine());
+        StartCoroutine(WaitSoundEndAndLoadScene(0));
     }
 
-    private IEnumerator GoBackToMainMenuCoroutine()
+    public void GoToNextLevel()
+    {
+        PlayButtonSound();
+        StartCoroutine(WaitSoundEndAndLoadScene(SceneManager.GetActiveScene().buildIndex + 1));
+    }
+
+    private IEnumerator WaitSoundEndAndLoadScene(int index)
     {
         yield return new WaitForSeconds(_buttonSoundLastTime);
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(index);
     }
 
     public void ResetCubes()

@@ -127,14 +127,6 @@ public class Game : MonoBehaviour
         {
             leftImage.gameObject.GetComponent<Renderer>().material.DOFade(1, 2);
             rightImage.gameObject.GetComponent<Renderer>().material.DOFade(1, 2);
-            StartCoroutine(loadNextScene());
         }
     }
-
-    IEnumerator loadNextScene()
-    {
-        yield return new WaitForSeconds(2);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-    }
-
 }

@@ -8,8 +8,9 @@ public class TalkingAlien : MonoBehaviour
     private Image _image;
     private GameObject _dialogueBox;
     private AudioSource _audioSource;
+    private GameObject _nextLevelButton;
 
-    [SerializeField]
+    [SerializeField][TextArea]
     private string _correctText, _incorrectText;
 
     [SerializeField]
@@ -23,6 +24,7 @@ public class TalkingAlien : MonoBehaviour
         _image = GetComponent<Image>();
         _audioSource = GetComponent<AudioSource>();
         _dialogueBox = transform.Find("DialogueBox").gameObject;
+        _nextLevelButton = transform.Find("NextLevelButton").gameObject;
 
         UI.Instance.OnCheckCubes += SaySomething;
 
@@ -34,10 +36,17 @@ public class TalkingAlien : MonoBehaviour
         _image.enabled = true;
         _dialogueBox.SetActive(true);
 
-        var text = isCorrect ? _correctText : _incorrectText;
-        _dialogueBox.GetComponentInChildren<Text>().text = text;
-
-        StartCoroutine(PlaySoundsAndDisappear(isCorrect));
+        if (isCorrect)
+        {
+            _dialogueBox.GetComponentInChildren<Text>().text = _correctText;
+            _nextLevelButton.SetActive(true);
+            _audioSource.PlayOneShot(_correctSound);
+        } 
+        else
+        {
+            _dialogueBox.GetComponentInChildren<Text>().text = _incorrectText;
+            StartCoroutine(PlaySoundsAndDisappear());
+        }  
     }
 
     void DisableSelf()
@@ -45,21 +54,15 @@ public class TalkingAlien : MonoBehaviour
         _image.enabled = false;
         _dialogueBox.SetActive(false);
         _audioSource.Stop();
+        _nextLevelButton.SetActive(false);
     }
 
-    IEnumerator PlaySoundsAndDisappear(bool isCorrect)
+    IEnumerator PlaySoundsAndDisappear()
     {
-        if (isCorrect)
-        {
-            _audioSource.PlayOneShot(_correctSound);
-            yield return new WaitForSeconds(_correctAnimTime);
-        }
-        else
-        {
-            _audioSource.clip = _incorrectSound;
-            _audioSource.Play();
-            yield return new WaitForSeconds(_incorrectAnimTime);
-        }
+
+        _audioSource.clip = _incorrectSound;
+        _audioSource.Play();
+        yield return new WaitForSeconds(_incorrectAnimTime);
         DisableSelf();
     }
 }
