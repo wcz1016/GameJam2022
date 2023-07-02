@@ -23,8 +23,8 @@ public class Game : MonoBehaviour
     public GameObject leftImage;
     public GameObject rightImage;
 
-    private Vector3 cubePrefabScale;
-    private Vector3 initialPositon;
+    private Vector3 _cubePrefabScale;
+    private Vector3 _initialPositon;
 
     private float farthestX, farthestY, farthestZ;
     private float nearestX, nearestY, nearestZ;
@@ -32,46 +32,47 @@ public class Game : MonoBehaviour
     private GameObject[,] leftShadows;
     private GameObject[,] rightShadows;
 
-    // Start is called before the first frame update
     void Start()
     {
-        cubePrefabScale = cubePrefab.transform.localScale;
-        initialPositon = initialTransform.position;
-        initCubes();
-        initArrows();
+        _cubePrefabScale = cubePrefab.transform.localScale;
+        _initialPositon = initialTransform.position;
+        InitCubes();
+        InitArrows();
         CubeManager.Instance.init();
-        initAnswer();
-        initShadow();
+        InitAnswer();
+        InitShadow();
         UI.Instance.OnCheckCubes += FinishLevelIfCorrect;
     }
 
-    void initArrows()
+    void InitArrows()
     {   
-        // 整个大正方体的六个面坐标，对于 x 和 z，远的意思是离镜头远，对于 y ，远的意思是离地面远
-        farthestX = initialPositon.x + (cubeNumber / 2 ) * cubePrefabScale.x;
-        farthestY = initialPositon.y + (cubeNumber / 2 ) * cubePrefabScale.y;
-        farthestZ = initialPositon.z - (cubeNumber / 2 ) * cubePrefabScale.z;
+        // The far and near is related to camera
+        // TODO: is the reverse calculation of z axis related to left/right hand coordinate?
+        farthestX = _initialPositon.x + (cubeNumber / 2 ) * _cubePrefabScale.x;
+        farthestY = _initialPositon.y + (cubeNumber / 2 ) * _cubePrefabScale.y;
+        farthestZ = _initialPositon.z - (cubeNumber / 2 ) * _cubePrefabScale.z;
 
-        nearestX = initialPositon.x - (cubeNumber / 2 ) * cubePrefabScale.x;
-        nearestY = initialPositon.y - (cubeNumber / 2 ) * cubePrefabScale.y;
-        nearestZ = initialPositon.z + (cubeNumber / 2 ) * cubePrefabScale.z;
+        nearestX = _initialPositon.x - (cubeNumber / 2 ) * _cubePrefabScale.x;
+        nearestY = _initialPositon.y - (cubeNumber / 2 ) * _cubePrefabScale.y;
+        nearestZ = _initialPositon.z + (cubeNumber / 2 ) * _cubePrefabScale.z;
 
+        // TODO: is this kind of Instantiate a gameobject -> init its script process right?
         GameObject leftArrow = Instantiate(leftArrowPrefab, new Vector3(
-           farthestX + cubePrefabScale.x,  farthestY + cubePrefabScale.y, nearestZ + cubePrefabScale.z
+           farthestX + _cubePrefabScale.x,  farthestY + _cubePrefabScale.y, nearestZ + _cubePrefabScale.z
             ), Quaternion.identity);
-        leftArrow.GetComponent<Arrow>().farthestPostion = new Vector3(
-            farthestX + cubePrefabScale.x, farthestY + cubePrefabScale.y, farthestZ
+        leftArrow.GetComponent<Arrow>().FarthestPosition = new Vector3(
+            farthestX + _cubePrefabScale.x, farthestY + _cubePrefabScale.y, farthestZ
             );
 
         GameObject frontArrow = Instantiate(frontArrowPrefab, new Vector3(
-            nearestX - cubePrefabScale.x, farthestY + cubePrefabScale.y, farthestZ
+            nearestX - _cubePrefabScale.x, farthestY + _cubePrefabScale.y, farthestZ
             ), Quaternion.identity);
-        frontArrow.GetComponent<Arrow>().farthestPostion = new Vector3(
-            farthestX, farthestY + cubePrefabScale.y, farthestZ
+        frontArrow.GetComponent<Arrow>().FarthestPosition = new Vector3(
+            farthestX, farthestY + _cubePrefabScale.y, farthestZ
             );
     }
 
-    void initCubes()
+    void InitCubes()
     {
         for (int x = 0; x < cubeNumber; x++)
         {
@@ -80,9 +81,9 @@ public class Game : MonoBehaviour
                 for (int z = 0; z < cubeNumber; z++)
                 {
                     GameObject cube = Instantiate(cubePrefab, new Vector3(
-                        initialPositon.x + (x - cubeNumber / 2) * cubePrefabScale.x,
-                        initialPositon.y + (y - cubeNumber / 2) * cubePrefabScale.y,
-                        initialPositon.z + (z - cubeNumber / 2) * cubePrefabScale.z
+                        _initialPositon.x + (x - cubeNumber / 2) * _cubePrefabScale.x,
+                        _initialPositon.y + (y - cubeNumber / 2) * _cubePrefabScale.y,
+                        _initialPositon.z + (z - cubeNumber / 2) * _cubePrefabScale.z
                     ), Quaternion.identity);
                     cube.GetComponent<Cube>().XPos = x;
                     cube.GetComponent<Cube>().YPos = y;
@@ -92,15 +93,16 @@ public class Game : MonoBehaviour
         }
     }
 
-    void initAnswer()
+    void InitAnswer()
     {
-        CubeManager.Instance.leftAnswerPositions = new HashSet<Vector2Int>(shadowMap.leftPos);
-        CubeManager.Instance.rightAnswerPositions = new HashSet<Vector2Int>(shadowMap.rightPos);
+        CubeManager.Instance.leftAnswerIndexes = new HashSet<Vector2Int>(shadowMap.leftPos);
+        CubeManager.Instance.rightAnswerIndexes = new HashSet<Vector2Int>(shadowMap.rightPos);
     }
-    void initShadow()
+
+    void InitShadow()
     {
-        // 左侧答案投影
-        foreach(Vector2Int vec in CubeManager.Instance.leftAnswerPositions)
+        // Left side awnser shadows
+        foreach(Vector2Int vec in CubeManager.Instance.leftAnswerIndexes)
         {
             int z = vec.x, y = vec.y;
             Instantiate(shadowPrefab, new Vector3(
@@ -109,8 +111,8 @@ public class Game : MonoBehaviour
                         farthestZ + z * shadowPrefab.transform.localScale.z
                        ), Quaternion.identity);
         }
-        // 右侧答案投影
-        foreach (Vector2Int vec in CubeManager.Instance.rightAnswerPositions)
+        // Right side awnser shadows
+        foreach (Vector2Int vec in CubeManager.Instance.rightAnswerIndexes)
         {
             int x = vec.x, y = vec.y;
             Instantiate(shadowPrefab, new Vector3(

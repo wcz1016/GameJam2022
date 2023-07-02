@@ -8,21 +8,21 @@ public class CubeManager : MonoBehaviour
 
     public static CubeManager Instance { get { return _instance; } }
 
-    public float zAxisLimit;
+    public float ZAxisLimit;
 
-    public float xAxisLimit;
+    public float XAxisLimit;
 
-    private GameObject[] allCubes;
+    private GameObject[] _allCubes;
 
-    private List<Vector2Int> leftSelectedPositions;
+    private List<Vector2Int> leftSelectedIndexes;
 
-    private List<Vector2Int> rightSelectedPositions;
+    private List<Vector2Int> rightSelectedIndexes;
 
-    public HashSet<Vector2Int> leftAnswerPositions;
+    public HashSet<Vector2Int> leftAnswerIndexes;
 
-    public HashSet<Vector2Int> rightAnswerPositions;
+    public HashSet<Vector2Int> rightAnswerIndexes;
 
-    public int usedNum;
+    public int UsedNum;
 
     private void Awake()
     {
@@ -38,20 +38,21 @@ public class CubeManager : MonoBehaviour
 
     public void init()
     {
-        allCubes = GameObject.FindGameObjectsWithTag("Cube");
-        leftSelectedPositions = new List<Vector2Int>();
-        rightSelectedPositions = new List<Vector2Int>();
-        leftAnswerPositions = new HashSet<Vector2Int>();
-        rightAnswerPositions = new HashSet<Vector2Int>();
-        leftAnswerPositions.Add(new Vector2Int(0,0));
-        usedNum = 0;
+        _allCubes = GameObject.FindGameObjectsWithTag("Cube");
+        leftSelectedIndexes = new List<Vector2Int>();
+        rightSelectedIndexes = new List<Vector2Int>();
+        leftAnswerIndexes = new HashSet<Vector2Int>();
+        rightAnswerIndexes = new HashSet<Vector2Int>();
+        // TODO: why? May for debugging?
+        leftAnswerIndexes.Add(new Vector2Int(0,0));
+        UsedNum = 0;
     }
 
-    public void adjustCubesVisibility()
+    public void AdjustCubesVisibility()
     {
-        foreach(GameObject cube in allCubes)
+        foreach(var cube in _allCubes)
         {
-            if (cube.transform.position.x < xAxisLimit || cube.transform.position.z > zAxisLimit)
+            if (cube.transform.position.x < XAxisLimit || cube.transform.position.z > ZAxisLimit)
                 cube.SetActive(false);
             else
                 cube.SetActive(true);
@@ -60,41 +61,41 @@ public class CubeManager : MonoBehaviour
 
     public void addLeftPos(Vector2Int pos)
     {
-        leftSelectedPositions.Add(pos);
+        leftSelectedIndexes.Add(pos);
     }
 
     public void addRightPos(Vector2Int pos)
     {
-        rightSelectedPositions.Add(pos);
+        rightSelectedIndexes.Add(pos);
     }
 
     public void removeLeftPos(Vector2Int pos)
     {
-        leftSelectedPositions.Remove(pos);
+        leftSelectedIndexes.Remove(pos);
     }
     
     public void removeRightPos(Vector2Int pos)
     {
-        rightSelectedPositions.Remove(pos);
+        rightSelectedIndexes.Remove(pos);
     }
 
     public bool isCorrect()
     {
-        return leftAnswerPositions.SetEquals(new HashSet<Vector2Int>(leftSelectedPositions))
-            && rightAnswerPositions.SetEquals(new HashSet<Vector2Int>(rightSelectedPositions));
+        return leftAnswerIndexes.SetEquals(new HashSet<Vector2Int>(leftSelectedIndexes))
+            && rightAnswerIndexes.SetEquals(new HashSet<Vector2Int>(rightSelectedIndexes));
         
     }
 
     void debugPoss()
     {
         Debug.Log("left");
-        HashSet<Vector2Int> leftSelectedPostionSet = new HashSet<Vector2Int>(leftSelectedPositions);
+        HashSet<Vector2Int> leftSelectedPostionSet = new HashSet<Vector2Int>(leftSelectedIndexes);
         foreach (Vector2Int vec in leftSelectedPostionSet)
         {
             Debug.Log(vec);
         }
         Debug.Log("right");
-        HashSet<Vector2Int> rightSelectedPostionSet = new HashSet<Vector2Int>(rightSelectedPositions);
+        HashSet<Vector2Int> rightSelectedPostionSet = new HashSet<Vector2Int>(rightSelectedIndexes);
         foreach (Vector2Int vec in rightSelectedPostionSet)
         {
             Debug.Log(vec);
@@ -103,13 +104,13 @@ public class CubeManager : MonoBehaviour
     void debugAnswers()
     {
         Debug.Log("left");
-        foreach (Vector2Int vec in leftAnswerPositions)
+        foreach (Vector2Int vec in leftAnswerIndexes)
         {
             Debug.Log(vec);
         }
         Debug.Log("right");
     
-        foreach (Vector2Int vec in rightAnswerPositions)
+        foreach (Vector2Int vec in rightAnswerIndexes)
         {
             Debug.Log(vec);
         }
@@ -117,13 +118,13 @@ public class CubeManager : MonoBehaviour
 
     public void resetCubes()
     {
-        foreach(GameObject cube in allCubes)
+        foreach(GameObject cube in _allCubes)
         {
             cube.GetComponent<Cube>().UnselectSelf();
         }
-        leftSelectedPositions.Clear();
-        rightSelectedPositions.Clear();
-        usedNum = 0;
+        leftSelectedIndexes.Clear();
+        rightSelectedIndexes.Clear();
+        UsedNum = 0;
         UI.Instance.SetUsedNum();
     }
 }

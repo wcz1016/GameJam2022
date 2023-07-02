@@ -39,7 +39,7 @@ public class Cube : MonoBehaviour
             // TODO: CubeManager.AddCube(int xPos, yPos, zPos)
             CubeManager.Instance.addLeftPos(new Vector2Int(ZPos, YPos));
             CubeManager.Instance.addRightPos(new Vector2Int(XPos, YPos));
-            CubeManager.Instance.usedNum += 1;
+            CubeManager.Instance.UsedNum += 1;
         }
         else
         {
@@ -47,7 +47,7 @@ public class Cube : MonoBehaviour
             _audioSource.PlayOneShot(_unselectSound);
             CubeManager.Instance.removeLeftPos(new Vector2Int(ZPos, YPos));
             CubeManager.Instance.removeRightPos(new Vector2Int(XPos, YPos));
-            CubeManager.Instance.usedNum -= 1;
+            CubeManager.Instance.UsedNum -= 1;
         }
 
         UI.Instance.SetUsedNum();

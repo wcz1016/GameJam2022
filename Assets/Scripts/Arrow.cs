@@ -6,39 +6,43 @@ public enum Direction { x, y, z };
 
 class Arrow : MonoBehaviour
 {
-  
-    public Direction direction;
-    public Vector3 farthestPostion;
-    private Vector3 initialPosition;
+    // TODO: should be serializable private
+    public Direction MyDirection;
+    public Vector3 FarthestPosition;
 
-    private bool dragging = false;
+    private Vector3 _initialPosition;
+
+    private bool _isDragging = false;
+    // TODO: A very bad naming and design, will remove it if use concrete moving 
     private float distance;
     
+    // TODO: Better be a static or put into a singleton
     private GameObject[] allArrows;
-    private Vector3 directionVector;
+
+    private Vector3 _directionVector;
 
     private void Start()
     {
-        initialPosition = gameObject.transform.position;
+        _initialPosition = gameObject.transform.position;
         allArrows = GameObject.FindGameObjectsWithTag("Arrow");
-        switch (direction) {
+        switch (MyDirection) {
             case Direction.x:
-                directionVector = new Vector3(1, 0, 0);
+                _directionVector = new Vector3(1, 0, 0);
                 break;
             case Direction.y:
-                directionVector = new Vector3(0, 1, 0);
+                _directionVector = new Vector3(0, 1, 0);
                 break;
             case Direction.z:
-                directionVector = new Vector3(0, 0, 1);
+                _directionVector = new Vector3(0, 0, 1);
                 break;
         }
-        setAxisLimit();
+        SetAxisLimit();
     }
 
     void OnMouseDown()
     {
         distance = Vector3.Distance(transform.position, Camera.main.transform.position);
-        dragging = true;
+        _isDragging = true;
         foreach(GameObject arrow in allArrows)
         {
             if (arrow != gameObject)
@@ -49,58 +53,47 @@ class Arrow : MonoBehaviour
 
     void OnMouseUp()
     {
-        dragging = false;
-        if (gameObject.transform.position.Equals(initialPosition))
+        _isDragging = false;
+        if (gameObject.transform.position.Equals(_initialPosition))
         {
             foreach (GameObject arrow in allArrows)
             {
                 arrow.SetActive(true);
             }
         }
-        setAxisLimit();
-        CubeManager.Instance.adjustCubesVisibility();
+
+        // TODO: will these look more proper using events/callback? not a high prior though
+        SetAxisLimit();
+        CubeManager.Instance.AdjustCubesVisibility();
     }
 
     void Update()
     {
-        if (dragging)
+        if (_isDragging)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             Vector3 rayPoint = ray.GetPoint(distance);
-            Vector3 moveMent = rayPoint - transform.position;
-            Vector3 distPostion = transform.position + Vector3.Project(moveMent, directionVector);
+            Vector3 movement = rayPoint - transform.position;
+            Vector3 distPosition = transform.position + Vector3.Project(movement, _directionVector);
 
-            if (isFartherThan(distPostion, farthestPostion))
-                transform.position = farthestPostion;
-            else if (isFartherThan(initialPosition, distPostion))
-                transform.position = initialPosition;
-            else
-                transform.position = distPostion;
+            if (MyDirection == Direction.x)
+                distPosition.x = Mathf.Clamp(distPosition.x, _initialPosition.x, FarthestPosition.x);
+            else if(MyDirection == Direction.y)
+                distPosition.z = Mathf.Clamp(distPosition.z, _initialPosition.z, FarthestPosition.z);
+
+            transform.position = distPosition;
         }
     }
 
-    // 因为实在不知道怎么描述，暂定离镜头远的方向为 far
-    private bool isFartherThan(Vector3 pos1, Vector3 pos2)
+    private void SetAxisLimit()
     {
-        switch (direction)
+        switch (MyDirection)
         {
             case Direction.x:
-                return pos1.x > pos2.x;
-            case Direction.z:
-                return pos1.z < pos2.z;
-            default: return false;
-        }
-    }
-
-    private void setAxisLimit()
-    {
-        switch (direction)
-        {
-            case Direction.x:
-                CubeManager.Instance.xAxisLimit = transform.position.x;
+                CubeManager.Instance.XAxisLimit = transform.position.x;
                 break;
             case Direction.z:
-                CubeManager.Instance.zAxisLimit = transform.position.z;
+                CubeManager.Instance.ZAxisLimit = transform.position.z;
                 break;
         }
     }

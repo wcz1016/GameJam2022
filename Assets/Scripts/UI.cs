@@ -40,7 +40,7 @@ public class UI : MonoBehaviour
 
     public void SetUsedNum()
     {
-        _usedNum.text = CubeManager.Instance.usedNum.ToString();
+        _usedNum.text = CubeManager.Instance.UsedNum.ToString();
     }
 
     public void OpenMenuPanel()

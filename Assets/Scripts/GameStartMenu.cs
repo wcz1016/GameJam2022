@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class GameStartMenu : MonoBehaviour
 {
+    //TODO: will unity inspector also show attribute with '_'?
     [SerializeField]
     private GameObject _chooseLevelPanel;
 
