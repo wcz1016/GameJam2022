@@ -37,16 +37,16 @@ public class Cube : MonoBehaviour
             SelectSelf();
             _audioSource.PlayOneShot(_selectSound);
             // TODO: CubeManager.AddCube(int xPos, yPos, zPos)
-            CubeManager.Instance.addLeftPos(new Vector2Int(ZPos, YPos));
-            CubeManager.Instance.addRightPos(new Vector2Int(XPos, YPos));
+            CubeManager.Instance.AddLeftPos(new Vector2Int(ZPos, YPos));
+            CubeManager.Instance.AddRightPos(new Vector2Int(XPos, YPos));
             CubeManager.Instance.UsedNum += 1;
         }
         else
         {
             UnselectSelf();
             _audioSource.PlayOneShot(_unselectSound);
-            CubeManager.Instance.removeLeftPos(new Vector2Int(ZPos, YPos));
-            CubeManager.Instance.removeRightPos(new Vector2Int(XPos, YPos));
+            CubeManager.Instance.RemoveLeftPos(new Vector2Int(ZPos, YPos));
+            CubeManager.Instance.RemoveRightPos(new Vector2Int(XPos, YPos));
             CubeManager.Instance.UsedNum -= 1;
         }
 

@@ -36,7 +36,7 @@ public class CubeManager : MonoBehaviour
         }
     }
 
-    public void init()
+    public void Init()
     {
         _allCubes = GameObject.FindGameObjectsWithTag("Cube");
         leftSelectedIndexes = new List<Vector2Int>();
@@ -48,6 +48,7 @@ public class CubeManager : MonoBehaviour
         UsedNum = 0;
     }
 
+    // Maybe move this to cube prefab, so they decide for themselves?
     public void AdjustCubesVisibility()
     {
         foreach(var cube in _allCubes)
@@ -59,34 +60,34 @@ public class CubeManager : MonoBehaviour
         }
     }
 
-    public void addLeftPos(Vector2Int pos)
+    public void AddLeftPos(Vector2Int pos)
     {
         leftSelectedIndexes.Add(pos);
     }
 
-    public void addRightPos(Vector2Int pos)
+    public void AddRightPos(Vector2Int pos)
     {
         rightSelectedIndexes.Add(pos);
     }
 
-    public void removeLeftPos(Vector2Int pos)
+    public void RemoveLeftPos(Vector2Int pos)
     {
         leftSelectedIndexes.Remove(pos);
     }
     
-    public void removeRightPos(Vector2Int pos)
+    public void RemoveRightPos(Vector2Int pos)
     {
         rightSelectedIndexes.Remove(pos);
     }
 
-    public bool isCorrect()
+    public bool IsCorrect()
     {
         return leftAnswerIndexes.SetEquals(new HashSet<Vector2Int>(leftSelectedIndexes))
             && rightAnswerIndexes.SetEquals(new HashSet<Vector2Int>(rightSelectedIndexes));
         
     }
 
-    void debugPoss()
+    void DebugPoss()
     {
         Debug.Log("left");
         HashSet<Vector2Int> leftSelectedPostionSet = new HashSet<Vector2Int>(leftSelectedIndexes);
@@ -101,7 +102,7 @@ public class CubeManager : MonoBehaviour
             Debug.Log(vec);
         }
     }
-    void debugAnswers()
+    void DebugAnswers()
     {
         Debug.Log("left");
         foreach (Vector2Int vec in leftAnswerIndexes)

@@ -38,7 +38,7 @@ public class Game : MonoBehaviour
         _initialPositon = initialTransform.position;
         InitCubes();
         InitArrows();
-        CubeManager.Instance.init();
+        CubeManager.Instance.Init();
         InitAnswer();
         InitShadow();
         UI.Instance.OnCheckCubes += FinishLevelIfCorrect;
@@ -57,6 +57,7 @@ public class Game : MonoBehaviour
         nearestZ = _initialPositon.z + (cubeNumber / 2 ) * _cubePrefabScale.z;
 
         // TODO: is this kind of Instantiate a gameobject -> init its script process right?
+        // If so, maybe axis should also be inited here?
         GameObject leftArrow = Instantiate(leftArrowPrefab, new Vector3(
            farthestX + _cubePrefabScale.x,  farthestY + _cubePrefabScale.y, nearestZ + _cubePrefabScale.z
             ), Quaternion.identity);

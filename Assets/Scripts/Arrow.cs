@@ -78,8 +78,8 @@ class Arrow : MonoBehaviour
 
             if (MyDirection == Direction.x)
                 distPosition.x = Mathf.Clamp(distPosition.x, _initialPosition.x, FarthestPosition.x);
-            else if(MyDirection == Direction.y)
-                distPosition.z = Mathf.Clamp(distPosition.z, _initialPosition.z, FarthestPosition.z);
+            else if(MyDirection == Direction.z)
+                distPosition.z = Mathf.Clamp(distPosition.z, FarthestPosition.z, _initialPosition.z);
 
             transform.position = distPosition;
         }

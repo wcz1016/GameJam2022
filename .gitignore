@@ -17,3 +17,9 @@ Assembly-CSharp-Editor.csproj
 *.csproj
 
 Assets/Universal Sound FX.meta
+*.gz
+WebGL build/Build/WebGL build.data.gz
+WebGL build/Build/WebGL build.framework.js.gz
+WebGL build/Build/WebGL build.loader.js
+WebGL build/Build/WebGL build.wasm.gz
+WebGL build/index.html

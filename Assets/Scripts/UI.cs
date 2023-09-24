@@ -88,7 +88,7 @@ public class UI : MonoBehaviour
     private IEnumerator CheckIsCorrectCorotine()
     {
         yield return new WaitForSeconds(_buttonSoundLastTime);
-        bool isCorrect = CubeManager.Instance.isCorrect();
+        bool isCorrect = CubeManager.Instance.IsCorrect();
         OnCheckCubes.Invoke(isCorrect);
     }
 }
