@@ -5,16 +5,16 @@ using UnityEngine.Rendering;
 
 public class Cube : MonoBehaviour
 {
-    public int XPos;
-    public int YPos;
-    public int ZPos;
+    public int XIndex;
+    public int YIndex;
+    public int ZIndex;
 
     [SerializeField]
     private AudioClip _selectSound;
     [SerializeField]
     private AudioClip _unselectSound;
 
-    private bool _active = false;
+    private bool _selected = false;
 
     private Color _defaultColor;
 
@@ -32,21 +32,21 @@ public class Cube : MonoBehaviour
         if (UI.Instance.MenuPanel.activeSelf)
             return;
 
-        if (!_active)
+        if (!_selected)
         {
             SelectSelf();
             _audioSource.PlayOneShot(_selectSound);
             // TODO: CubeManager.AddCube(int xPos, yPos, zPos)
-            CubeManager.Instance.AddLeftPos(new Vector2Int(ZPos, YPos));
-            CubeManager.Instance.AddRightPos(new Vector2Int(XPos, YPos));
+            CubeManager.Instance.AddLeftPos(new Vector2Int(ZIndex, YIndex));
+            CubeManager.Instance.AddRightPos(new Vector2Int(XIndex, YIndex));
             CubeManager.Instance.UsedNum += 1;
         }
         else
         {
             UnselectSelf();
             _audioSource.PlayOneShot(_unselectSound);
-            CubeManager.Instance.RemoveLeftPos(new Vector2Int(ZPos, YPos));
-            CubeManager.Instance.RemoveRightPos(new Vector2Int(XPos, YPos));
+            CubeManager.Instance.RemoveLeftPos(new Vector2Int(ZIndex, YIndex));
+            CubeManager.Instance.RemoveRightPos(new Vector2Int(XIndex, YIndex));
             CubeManager.Instance.UsedNum -= 1;
         }
 
@@ -55,7 +55,7 @@ public class Cube : MonoBehaviour
 
     private void SelectSelf()
     {
-        _active = true;
+        _selected = true;
         
         GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.On;
         GetComponent<Renderer>().material.color = Color.red;
@@ -63,7 +63,7 @@ public class Cube : MonoBehaviour
 
     public void UnselectSelf()
     {
-        _active = false;
+        _selected = false;
         
         gameObject.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
         gameObject.GetComponent<Renderer>().material.color = _defaultColor;

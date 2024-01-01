@@ -809,7 +809,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 65.529}
+  m_AnchoredPosition: {x: 0, y: 65.5293}
   m_SizeDelta: {x: -1200, y: -582.3374}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6495926081119432778
@@ -1218,7 +1218,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UiScaleMode: 0
   m_ReferencePixelsPerUnit: 100
-  m_ScaleFactor: 1
+  m_ScaleFactor: 0.5
   m_ReferenceResolution: {x: 800, y: 600}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
@@ -1256,7 +1256,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8adba94a9b202047a2d884c6a613215, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebugIsCorrect: 0
   MenuPanel: {fileID: 6495926081119432887}
   _usedNum: {fileID: 6495926081129493013}
   _buttonSoundLastTime: 0.4

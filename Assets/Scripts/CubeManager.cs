@@ -12,17 +12,26 @@ public class CubeManager : MonoBehaviour
 
     public float XAxisLimit;
 
-    private GameObject[] _allCubes;
+    private List<GameObject> _allCubes;
 
     private List<Vector2Int> leftSelectedIndexes;
 
     private List<Vector2Int> rightSelectedIndexes;
+
+    [SerializeField]
+    private GameObject _cubePrefab;
+    public GameObject CubePrefab => _cubePrefab;
+
+    [SerializeField]
+    private float _rotationSpeed;
 
     public HashSet<Vector2Int> leftAnswerIndexes;
 
     public HashSet<Vector2Int> rightAnswerIndexes;
 
     public int UsedNum;
+
+    private bool _isTrackingMouse;
 
     private void Awake()
     {
@@ -36,9 +45,31 @@ public class CubeManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            _isTrackingMouse = true;
+        }
+
+        if (Input.GetMouseButtonUp(1))
+        {
+            _isTrackingMouse = false;
+        }
+
+        // TODO: Try apply smooth here
+        if (_isTrackingMouse)
+        {
+            float h = Input.GetAxis("Mouse X");
+            float v = Input.GetAxis("Mouse Y");
+            transform.Rotate(transform.up, -h * _rotationSpeed * Time.deltaTime, Space.World);
+            transform.Rotate(Camera.main.transform.right, v * _rotationSpeed * Time.deltaTime, Space.World);
+        }
+    }
+
     public void Init()
     {
-        _allCubes = GameObject.FindGameObjectsWithTag("Cube");
+        InitCubes();
         leftSelectedIndexes = new List<Vector2Int>();
         rightSelectedIndexes = new List<Vector2Int>();
         leftAnswerIndexes = new HashSet<Vector2Int>();
@@ -53,7 +84,7 @@ public class CubeManager : MonoBehaviour
     {
         foreach(var cube in _allCubes)
         {
-            if (cube.transform.position.x < XAxisLimit || cube.transform.position.z > ZAxisLimit)
+            if (cube.transform.localPosition.x < XAxisLimit || cube.transform.localPosition.z > ZAxisLimit)
                 cube.SetActive(false);
             else
                 cube.SetActive(true);
@@ -117,7 +148,7 @@ public class CubeManager : MonoBehaviour
         }
     }
 
-    public void resetCubes()
+    public void ResetCubes()
     {
         foreach(GameObject cube in _allCubes)
         {
@@ -127,5 +158,33 @@ public class CubeManager : MonoBehaviour
         rightSelectedIndexes.Clear();
         UsedNum = 0;
         UI.Instance.SetUsedNum();
+    }
+
+    public void InitCubes()
+    {
+        Vector3 originPosition = Game.Instance.OriginPosition;
+        int cubeNumber = Game.Instance.CubeNumber;
+        Vector3 _cubePrefabScale = _cubePrefab.transform.localScale;
+
+        _allCubes = new List<GameObject>();
+
+        for (int x = 0; x < cubeNumber; x++)
+        {
+            for (int y = 0; y < cubeNumber; y++)
+            {
+                for (int z = 0; z < cubeNumber; z++)
+                {
+                    Vector3 cubePosition = new Vector3(originPosition.x +(x - cubeNumber / 2) * _cubePrefabScale.x,
+                        originPosition.y + (y - cubeNumber / 2) * _cubePrefabScale.y,
+                        originPosition.z + (z - cubeNumber / 2) * _cubePrefabScale.z);
+
+                    GameObject cube = Instantiate(_cubePrefab, cubePosition, Quaternion.identity, this.gameObject.transform);
+                    _allCubes.Add(cube);
+                    cube.GetComponent<Cube>().XIndex = x;
+                    cube.GetComponent<Cube>().YIndex = y;
+                    cube.GetComponent<Cube>().ZIndex = z;
+                }
+            }
+        }
     }
 }

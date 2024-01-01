@@ -76,7 +76,7 @@ public class UI : MonoBehaviour
     public void ResetCubes()
     {
         PlayButtonSound();
-        CubeManager.Instance.resetCubes();
+        CubeManager.Instance.ResetCubes();
         CloseMenuPanel();
     }
 

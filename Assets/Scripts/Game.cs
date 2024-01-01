@@ -6,9 +6,9 @@ using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
 {
-    public Transform initialTransform;
+    private static Game _instance;
+    public static Game Instance => _instance;
 
-    public GameObject cubePrefab;
     public GameObject frontArrowPrefab;
     public GameObject leftArrowPrefab;
     public GameObject shadowPrefab;
@@ -16,7 +16,9 @@ public class Game : MonoBehaviour
     public GameObject leftWall;
     public GameObject rightWall;
 
-    public int cubeNumber = 4;
+    [SerializeField]
+    private int _cubeNumber = 11;
+    public int CubeNumber => _cubeNumber;
 
     public ShadowMap shadowMap;
 
@@ -24,19 +26,28 @@ public class Game : MonoBehaviour
     public GameObject rightImage;
 
     private Vector3 _cubePrefabScale;
-    private Vector3 _initialPositon;
 
-    private float farthestX, farthestY, farthestZ;
-    private float nearestX, nearestY, nearestZ;
+    public Vector3 OriginPosition => gameObject.transform.position;
 
     private GameObject[,] leftShadows;
     private GameObject[,] rightShadows;
 
+    private void Awake()
+    {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            _instance = this;
+        }
+    }
+
     void Start()
     {
-        _cubePrefabScale = cubePrefab.transform.localScale;
-        _initialPositon = initialTransform.position;
-        InitCubes();
+        _cubePrefabScale = CubeManager.Instance.CubePrefab.transform.localScale;
+        // InitCubes();
         InitArrows();
         CubeManager.Instance.Init();
         InitAnswer();
@@ -45,53 +56,43 @@ public class Game : MonoBehaviour
     }
 
     void InitArrows()
-    {   
-        // The far and near is related to camera
-        // TODO: is the reverse calculation of z axis related to left/right hand coordinate?
-        farthestX = _initialPositon.x + (cubeNumber / 2 ) * _cubePrefabScale.x;
-        farthestY = _initialPositon.y + (cubeNumber / 2 ) * _cubePrefabScale.y;
-        farthestZ = _initialPositon.z - (cubeNumber / 2 ) * _cubePrefabScale.z;
+    {
+        int halfCubeNum = _cubeNumber / 2;
+        // make arrows slightly higher
+        float posY = OriginPosition.y + (halfCubeNum + 1) * _cubePrefabScale.y;
 
-        nearestX = _initialPositon.x - (cubeNumber / 2 ) * _cubePrefabScale.x;
-        nearestY = _initialPositon.y - (cubeNumber / 2 ) * _cubePrefabScale.y;
-        nearestZ = _initialPositon.z + (cubeNumber / 2 ) * _cubePrefabScale.z;
+        // The far and near is related to camera
+        float farthestX = OriginPosition.x + (halfCubeNum - 1) * _cubePrefabScale.x;
+        float farthestZ = OriginPosition.z - (halfCubeNum - 1) * _cubePrefabScale.z;
+
+        float nearestX = OriginPosition.x - (halfCubeNum + 1) * _cubePrefabScale.x;
+        float nearestZ = OriginPosition.z + (halfCubeNum + 1) * _cubePrefabScale.z;
+
+        Vector3 leftArrowPosition = new Vector3(farthestX + _cubePrefabScale.x, posY, nearestZ);
+        Vector3 rightArrowPosition = new Vector3(nearestX, posY, farthestZ - _cubePrefabScale.x);
 
         // TODO: is this kind of Instantiate a gameobject -> init its script process right?
         // If so, maybe axis should also be inited here?
-        GameObject leftArrow = Instantiate(leftArrowPrefab, new Vector3(
-           farthestX + _cubePrefabScale.x,  farthestY + _cubePrefabScale.y, nearestZ + _cubePrefabScale.z
-            ), Quaternion.identity);
-        leftArrow.GetComponent<Arrow>().FarthestPosition = new Vector3(
-            farthestX + _cubePrefabScale.x, farthestY + _cubePrefabScale.y, farthestZ
-            );
+        GameObject leftArrow = Instantiate(leftArrowPrefab, leftArrowPosition, Quaternion.identity, gameObject.transform);
+        GameObject rightArrow = Instantiate(frontArrowPrefab, rightArrowPosition, Quaternion.identity, gameObject.transform);
 
-        GameObject frontArrow = Instantiate(frontArrowPrefab, new Vector3(
-            nearestX - _cubePrefabScale.x, farthestY + _cubePrefabScale.y, farthestZ
-            ), Quaternion.identity);
-        frontArrow.GetComponent<Arrow>().FarthestPosition = new Vector3(
-            farthestX, farthestY + _cubePrefabScale.y, farthestZ
-            );
-    }
+        GameObject leftArrowNearEndMarker = new GameObject("LeftArrowNearEndMarker");
+        leftArrowNearEndMarker.transform.position = leftArrow.transform.position;
+        leftArrowNearEndMarker.transform.SetParent(transform);
 
-    void InitCubes()
-    {
-        for (int x = 0; x < cubeNumber; x++)
-        {
-            for (int y = 0; y < cubeNumber; y++)
-            {
-                for (int z = 0; z < cubeNumber; z++)
-                {
-                    GameObject cube = Instantiate(cubePrefab, new Vector3(
-                        _initialPositon.x + (x - cubeNumber / 2) * _cubePrefabScale.x,
-                        _initialPositon.y + (y - cubeNumber / 2) * _cubePrefabScale.y,
-                        _initialPositon.z + (z - cubeNumber / 2) * _cubePrefabScale.z
-                    ), Quaternion.identity);
-                    cube.GetComponent<Cube>().XPos = x;
-                    cube.GetComponent<Cube>().YPos = y;
-                    cube.GetComponent<Cube>().ZPos = z;
-                }
-            }
-        }
+        GameObject rightArrowNearEndMarker = new GameObject("RightArrowNearEndMarker");
+        rightArrowNearEndMarker.transform.position = rightArrow.transform.position;
+        rightArrowNearEndMarker.transform.SetParent(transform);
+
+        GameObject farEndMarker = new GameObject("FarEndMarker");
+        farEndMarker.transform.position = new Vector3(farthestX, posY, farthestZ);
+        farEndMarker.transform.SetParent(transform);
+
+        leftArrow.GetComponent<Arrow>().NearEndMarker = leftArrowNearEndMarker.transform;
+        leftArrow.GetComponent<Arrow>().FarEndMarker = farEndMarker.transform;
+
+        rightArrow.GetComponent<Arrow>().NearEndMarker = rightArrowNearEndMarker.transform;
+        rightArrow.GetComponent<Arrow>().FarEndMarker = farEndMarker.transform;
     }
 
     void InitAnswer()
@@ -102,8 +103,12 @@ public class Game : MonoBehaviour
 
     void InitShadow()
     {
+        // weird, but leave it as it is now
+        float farthestZ = OriginPosition.z - (_cubeNumber / 2) * _cubePrefabScale.z;
+        float nearestX = OriginPosition.x - (_cubeNumber / 2) * _cubePrefabScale.x;
+        float nearestY = OriginPosition.y - (_cubeNumber / 2) * _cubePrefabScale.y;
         // Left side awnser shadows
-        foreach(Vector2Int vec in CubeManager.Instance.leftAnswerIndexes)
+        foreach (Vector2Int vec in CubeManager.Instance.leftAnswerIndexes)
         {
             int z = vec.x, y = vec.y;
             Instantiate(shadowPrefab, new Vector3(
