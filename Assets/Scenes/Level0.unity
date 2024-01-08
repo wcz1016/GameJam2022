@@ -249,6 +249,8 @@ MonoBehaviour:
   ZAxisLimit: 0
   XAxisLimit: 0
   _cubePrefab: {fileID: 8718504861095989781, guid: 9cbcc5a4262adcf4a8130250b9f66198, type: 3}
+  LeftArrowPrefab: {fileID: 9038956572389335655, guid: 1b8629187ef1c334fb1b9527c6ed9fef, type: 3}
+  RightArrowPrefab: {fileID: 3441053303902283069, guid: 11a2a616d0a591a4e8935f757a19db4c, type: 3}
   _rotationSpeed: 200
   UsedNum: 0
 --- !u!4 &106731311
@@ -277,15 +279,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a211e70bfd0a31340b106c063eb951d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  frontArrowPrefab: {fileID: 3441053303902283069, guid: 11a2a616d0a591a4e8935f757a19db4c, type: 3}
-  leftArrowPrefab: {fileID: 9038956572389335655, guid: 1b8629187ef1c334fb1b9527c6ed9fef, type: 3}
   shadowPrefab: {fileID: 4253887251275345226, guid: 635b4bf1527ab2f48842b2686b7f2c83, type: 3}
   leftWall: {fileID: 168775484}
   rightWall: {fileID: 149846755}
   _cubeNumber: 11
   shadowMap: {fileID: 11400000, guid: 95436d65839ab1847880f8769882d7fb, type: 2}
-  leftImage: {fileID: 854894679}
-  rightImage: {fileID: 766470088}
+  leftPainting: {fileID: 854894679}
+  rightPainting: {fileID: 766470088}
+  BlockInput: 0
 --- !u!1 &149846755
 GameObject:
   m_ObjectHideFlags: 0
