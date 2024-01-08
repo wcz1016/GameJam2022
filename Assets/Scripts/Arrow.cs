@@ -25,8 +25,17 @@ class Arrow : MonoBehaviour
         SetAxisLimit();
     }
 
+    public void Reset()
+    {
+        transform.position = NearEndMarker.transform.position;
+        SetAxisLimit();
+    }
+
     void OnMouseDown()
     {
+        if (Game.Instance.BlockInput)
+            return;
+
         _rayCastDistance = Vector3.Distance(transform.position, Camera.main.transform.position);
         _isDragging = true;
 
@@ -49,9 +58,12 @@ class Arrow : MonoBehaviour
 
     void OnMouseUp()
     {
+        if (Game.Instance.BlockInput)
+            return;
+
         _isDragging = false;
         // If we can clip and use discrete maker/index, we can use index as condition instead of distance
-        if (Vector3.Distance(transform.position, NearEndMarker.position) < 0.01f)
+        if (Vector3.Distance(transform.position, NearEndMarker.position) < CubeManager.Instance.CubePrefab.transform.localScale.x / 2)
         {
             foreach (GameObject arrow in _allArrows)
             {

@@ -29,7 +29,7 @@ public class Cube : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (UI.Instance.MenuPanel.activeSelf)
+        if (Game.Instance.BlockInput)
             return;
 
         if (!_selected)

@@ -31,7 +31,7 @@ public class TalkingAlien : MonoBehaviour
         DisableSelf();
     }
 
-    void SaySomething(bool isCorrect)
+    public void SaySomething(bool isCorrect)
     {
         _image.enabled = true;
         _dialogueBox.SetActive(true);

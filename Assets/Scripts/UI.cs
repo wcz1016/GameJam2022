@@ -35,7 +35,7 @@ public class UI : MonoBehaviour
     public void CheckIsCorrect()
     {      
         PlayButtonSound();
-        StartCoroutine(CheckIsCorrectCorotine());
+        CubeManager.Instance.CheckIsCorrect();
     }
 
     public void SetUsedNum()
@@ -47,12 +47,14 @@ public class UI : MonoBehaviour
     {
         PlayButtonSound();
         MenuPanel.SetActive(true);
+        Game.Instance.BlockInput = true;
     }
 
     public void CloseMenuPanel()
     {
         PlayButtonSound();
         MenuPanel.SetActive(false);
+        Game.Instance.BlockInput = false;
     }
 
     public void GoBackToMainMenu()
@@ -85,10 +87,8 @@ public class UI : MonoBehaviour
         _audioSource.Play();
     }
 
-    private IEnumerator CheckIsCorrectCorotine()
+    public void InvokeCheckCubes(bool isCorrect)
     {
-        yield return new WaitForSeconds(_buttonSoundLastTime);
-        bool isCorrect = CubeManager.Instance.IsCorrect();
         OnCheckCubes.Invoke(isCorrect);
     }
 }

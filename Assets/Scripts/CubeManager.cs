@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,6 +22,12 @@ public class CubeManager : MonoBehaviour
     [SerializeField]
     private GameObject _cubePrefab;
     public GameObject CubePrefab => _cubePrefab;
+
+    public GameObject LeftArrowPrefab;
+    public GameObject RightArrowPrefab;
+
+    private GameObject _leftArrow;
+    private GameObject _rightArrow;
 
     [SerializeField]
     private float _rotationSpeed;
@@ -47,6 +54,9 @@ public class CubeManager : MonoBehaviour
 
     private void Update()
     {
+        if (Game.Instance.BlockInput)
+            return;
+
         if (Input.GetMouseButtonDown(1))
         {
             _isTrackingMouse = true;
@@ -70,6 +80,7 @@ public class CubeManager : MonoBehaviour
     public void Init()
     {
         InitCubes();
+        InitArrows();
         leftSelectedIndexes = new List<Vector2Int>();
         rightSelectedIndexes = new List<Vector2Int>();
         leftAnswerIndexes = new HashSet<Vector2Int>();
@@ -113,9 +124,9 @@ public class CubeManager : MonoBehaviour
 
     public bool IsCorrect()
     {
+        DebugPoss();
         return leftAnswerIndexes.SetEquals(new HashSet<Vector2Int>(leftSelectedIndexes))
             && rightAnswerIndexes.SetEquals(new HashSet<Vector2Int>(rightSelectedIndexes));
-        
     }
 
     void DebugPoss()
@@ -146,6 +157,50 @@ public class CubeManager : MonoBehaviour
         {
             Debug.Log(vec);
         }
+    }
+
+    public void InitArrows()
+    {
+        int cubeNumber = Game.Instance.CubeNumber;
+        int halfCubeNum = cubeNumber / 2;
+        Vector3 originPosition = Game.Instance.OriginPosition;
+        Vector3 _cubePrefabScale = _cubePrefab.transform.localScale;
+
+        // make arrows slightly higher
+        float posY = originPosition.y + (halfCubeNum + 1) * _cubePrefabScale.y;
+
+        // The far and near is related to camera
+        float farthestX = originPosition.x + (halfCubeNum - 1) * _cubePrefabScale.x;
+        float farthestZ = originPosition.z - (halfCubeNum - 1) * _cubePrefabScale.z;
+
+        float nearestX = originPosition.x - (halfCubeNum + 1) * _cubePrefabScale.x;
+        float nearestZ = originPosition.z + (halfCubeNum + 1) * _cubePrefabScale.z;
+
+        Vector3 leftArrowPosition = new Vector3(farthestX + _cubePrefabScale.x, posY, nearestZ);
+        Vector3 rightArrowPosition = new Vector3(nearestX, posY, farthestZ - _cubePrefabScale.x);
+
+        // TODO: is this kind of Instantiate a gameobject -> init its script process right?
+        // If so, maybe axis should also be inited here?
+        _leftArrow = Instantiate(LeftArrowPrefab, leftArrowPosition, Quaternion.identity, gameObject.transform);
+        _rightArrow = Instantiate(RightArrowPrefab, rightArrowPosition, Quaternion.identity, gameObject.transform);
+
+        GameObject leftArrowNearEndMarker = new GameObject("LeftArrowNearEndMarker");
+        leftArrowNearEndMarker.transform.position = _leftArrow.transform.position;
+        leftArrowNearEndMarker.transform.SetParent(transform);
+
+        GameObject rightArrowNearEndMarker = new GameObject("RightArrowNearEndMarker");
+        rightArrowNearEndMarker.transform.position = _rightArrow.transform.position;
+        rightArrowNearEndMarker.transform.SetParent(transform);
+
+        GameObject farEndMarker = new GameObject("FarEndMarker");
+        farEndMarker.transform.position = new Vector3(farthestX, posY, farthestZ);
+        farEndMarker.transform.SetParent(transform);
+
+        _leftArrow.GetComponent<Arrow>().NearEndMarker = leftArrowNearEndMarker.transform;
+        _leftArrow.GetComponent<Arrow>().FarEndMarker = farEndMarker.transform;
+
+        _rightArrow.GetComponent<Arrow>().NearEndMarker = rightArrowNearEndMarker.transform;
+        _rightArrow.GetComponent<Arrow>().FarEndMarker = farEndMarker.transform;
     }
 
     public void ResetCubes()
@@ -186,5 +241,22 @@ public class CubeManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void CheckIsCorrect()
+    {
+        Game.Instance.BlockInput = true;
+
+        _leftArrow.SetActive(true); 
+        _rightArrow.SetActive(true);
+        _leftArrow.GetComponent<Arrow>().Reset();
+        _rightArrow.GetComponent<Arrow>().Reset();
+        AdjustCubesVisibility();
+        
+        transform.DORotateQuaternion(Quaternion.identity, 0.5f).OnComplete(() =>
+        {
+            Game.Instance.BlockInput = false;
+            UI.Instance.InvokeCheckCubes(IsCorrect());
+        });
     }
 }
