@@ -8,6 +8,7 @@ class Arrow : MonoBehaviour
     public ArrowType ArrowType;
     public Transform NearEndMarker;
     public Transform FarEndMarker;
+    public int Index { get => _index; }
 
     private bool _isDragging = false;
     private Vector3 _lastMousePosition;
@@ -15,20 +16,48 @@ class Arrow : MonoBehaviour
     private float _rayCastDistance;
     
     private Vector3 _positiveDirection;
-    
-    // TODO: A very bad design, better be a static or put into a singleton
-    private GameObject[] _allArrows;
+
+    // maybe uint
+    private int _index;
+    private int _maxIndex;
+    private float _cubeLength;
+    private float _nearEndConcernedTransformValueAbs;
+    private Vector3 _lastArrowPosition;
 
     private void Start()
     {
-        _allArrows = GameObject.FindGameObjectsWithTag("Arrow");
-        SetAxisLimit();
+        switch (ArrowType)
+        {
+            case ArrowType.Red:
+                _positiveDirection = -transform.parent.right;
+                break;
+            case ArrowType.Blue:
+                _positiveDirection = transform.parent.forward;
+                break;
+        }
+        _cubeLength = CubeManager.Instance.CubePrefab.gameObject.transform.localScale.x;
+        _nearEndConcernedTransformValueAbs = Mathf.Abs(GetConcernedTransformValue(NearEndMarker.localPosition));
+        _maxIndex = CubeManager.Instance.CubeNumber - 1;
+        _index = _maxIndex;
     }
 
     public void Reset()
     {
-        transform.position = NearEndMarker.transform.position;
-        SetAxisLimit();
+        SetIndex(_maxIndex);
+        ClipToCurrentIndex();
+    }
+
+    float GetConcernedTransformValue(Vector3 aVector)
+    {
+        switch (ArrowType)
+        {
+            case ArrowType.Red:
+                return aVector.x;
+            case ArrowType.Blue:
+                return aVector.z;
+            default:
+                return 0.0f;
+        }
     }
 
     void OnMouseDown()
@@ -38,22 +67,8 @@ class Arrow : MonoBehaviour
 
         _rayCastDistance = Vector3.Distance(transform.position, Camera.main.transform.position);
         _isDragging = true;
-
-        foreach (GameObject arrow in _allArrows)
-        {
-            if (arrow != gameObject)
-                arrow.SetActive(false);
-        }
-
-        switch (ArrowType)
-        {
-            case ArrowType.Red:
-                _positiveDirection = transform.parent.right;
-                break;
-            case ArrowType.Blue:
-                _positiveDirection = -transform.parent.forward;
-                break;
-        }
+        _lastArrowPosition = transform.position;
+        CubeManager.Instance.SelectArrow(gameObject);
     }
 
     void OnMouseUp()
@@ -62,59 +77,70 @@ class Arrow : MonoBehaviour
             return;
 
         _isDragging = false;
-        // If we can clip and use discrete maker/index, we can use index as condition instead of distance
-        if (Vector3.Distance(transform.position, NearEndMarker.position) < CubeManager.Instance.CubePrefab.transform.localScale.x / 2)
+        if (_index == _maxIndex)
         {
-            foreach (GameObject arrow in _allArrows)
-            {
-                arrow.SetActive(true);
-            }
+            CubeManager.Instance.UnSelectArrow();
         }
-
-        // TODO: will these look more proper using events/callback? not a high prior though
-        SetAxisLimit();
-        CubeManager.Instance.AdjustCubesVisibility();
+        ClipToCurrentIndex();
     }
 
     void Update()
     {
         if (_isDragging && Vector3.Distance(_lastMousePosition, Input.mousePosition) > 0.01f)
         {
+            _lastMousePosition = Input.mousePosition;
             // Maybe not the right way to just use distance for raycast
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             Vector3 rayPoint = ray.GetPoint(_rayCastDistance);
-            Vector3 movementAlongDirection = Vector3.Project(rayPoint - transform.position, _positiveDirection);
+            Vector3 movementAlongDirection = Vector3.Project(rayPoint - _lastArrowPosition, _positiveDirection);
 
-            transform.position = transform.position + movementAlongDirection;
+            if (movementAlongDirection.magnitude < CubeManager.Instance.ArrowMoveDeadZone)
+                return;
 
-            // Clamp
-            Vector3 locPosition = transform.localPosition;
-            switch(ArrowType)
+            transform.position = _lastArrowPosition + movementAlongDirection;
+
+            float concernedTransformValueAbs = Mathf.Abs(GetConcernedTransformValue(transform.localPosition));
+            int index = Mathf.FloorToInt((concernedTransformValueAbs) / _cubeLength) - 1;
+            
+            if (GetConcernedTransformValue(transform.localPosition) * GetConcernedTransformValue(NearEndMarker.localPosition) < 0.0f || index < 0)
             {
-                case ArrowType.Red:
-                    locPosition.x = Mathf.Clamp(locPosition.x, NearEndMarker.localPosition.x, FarEndMarker.localPosition.x);
-                    break;
-                case ArrowType.Blue:
-                    locPosition.z = Mathf.Clamp(locPosition.z, FarEndMarker.localPosition.z, NearEndMarker.localPosition.z);
-                    break;
-
+                SetIndex(0);
+                ClipToCurrentIndex();
             }
-            transform.localPosition = locPosition;
-
-            _lastMousePosition = Input.mousePosition;
+            else if (concernedTransformValueAbs > _nearEndConcernedTransformValueAbs)
+            {
+                SetIndex(_maxIndex);
+                ClipToCurrentIndex();
+            }
+            else
+            {
+                SetIndex(index);
+                // TODO: not really working
+                if (IsCloseTo(concernedTransformValueAbs, (index) * _cubeLength))
+                    ClipToCurrentIndex();
+            }
         }
     }
 
-    private void SetAxisLimit()
+    void SetIndex(int anIndex)
     {
-        switch (ArrowType)
+        if (_index != anIndex)
         {
-            case ArrowType.Red:
-                CubeManager.Instance.XAxisLimit = transform.localPosition.x;
-                break;
-            case ArrowType.Blue:
-                CubeManager.Instance.ZAxisLimit = transform.localPosition.z;
-                break;
-        }
+            _index = anIndex;
+            CubeManager.Instance.AdjustCubesVisibility();
+        } 
+    }
+
+    void ClipToCurrentIndex()
+    {
+        transform.localPosition = NearEndMarker.localPosition - (_maxIndex - _index) * _cubeLength * _positiveDirection;
+    }
+
+    bool IsCloseTo(float a, float b)
+    {
+        if (a >= b - CubeManager.Instance.ArrowMoveDeadZone && a <= b + CubeManager.Instance.ArrowMoveDeadZone)
+            return true;
+        else
+            return false;
     }
 }

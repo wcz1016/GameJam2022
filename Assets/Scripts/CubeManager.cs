@@ -9,10 +9,6 @@ public class CubeManager : MonoBehaviour
 
     public static CubeManager Instance { get { return _instance; } }
 
-    public float ZAxisLimit;
-
-    public float XAxisLimit;
-
     private List<GameObject> _allCubes;
 
     private List<Vector2Int> leftSelectedIndexes;
@@ -28,17 +24,22 @@ public class CubeManager : MonoBehaviour
 
     private GameObject _leftArrow;
     private GameObject _rightArrow;
+    private List<GameObject> _allArrows;
+
+    private Vector3 _originPosition;
+    [SerializeField]
+    private int _cubeNumber;
+    public int CubeNumber { get => _cubeNumber; }
 
     [SerializeField]
-    private float _rotationSpeed;
+    private float _arrowMoveDeadZone;
+    public float ArrowMoveDeadZone { get => _arrowMoveDeadZone; }
 
     public HashSet<Vector2Int> leftAnswerIndexes;
 
     public HashSet<Vector2Int> rightAnswerIndexes;
 
     public int UsedNum;
-
-    private bool _isTrackingMouse;
 
     private void Awake()
     {
@@ -52,29 +53,13 @@ public class CubeManager : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void Start()
     {
-        if (Game.Instance.BlockInput)
-            return;
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            _isTrackingMouse = true;
-        }
-
-        if (Input.GetMouseButtonUp(1))
-        {
-            _isTrackingMouse = false;
-        }
-
-        // TODO: Try apply smooth here
-        if (_isTrackingMouse)
-        {
-            float h = Input.GetAxis("Mouse X");
-            float v = Input.GetAxis("Mouse Y");
-            transform.Rotate(transform.up, -h * _rotationSpeed * Time.deltaTime, Space.World);
-            transform.Rotate(Camera.main.transform.right, v * _rotationSpeed * Time.deltaTime, Space.World);
-        }
+        _originPosition = gameObject.transform.position;
+        Vector3 cubePrefabScale = _cubePrefab.transform.localScale;
+        _originPosition.x += (_cubeNumber / 2) * cubePrefabScale.x;
+        _originPosition.y += (_cubeNumber / 2) * cubePrefabScale.y;
+        _originPosition.z -= (_cubeNumber / 2) * cubePrefabScale.z;
     }
 
     public void Init()
@@ -95,7 +80,8 @@ public class CubeManager : MonoBehaviour
     {
         foreach(var cube in _allCubes)
         {
-            if (cube.transform.localPosition.x < XAxisLimit || cube.transform.localPosition.z > ZAxisLimit)
+            if (cube.GetComponent<Cube>().XIndex > _rightArrow.GetComponent<Arrow>().Index
+                || cube.GetComponent<Cube>().ZIndex > _leftArrow.GetComponent<Arrow>().Index)
                 cube.SetActive(false);
             else
                 cube.SetActive(true);
@@ -161,46 +147,45 @@ public class CubeManager : MonoBehaviour
 
     public void InitArrows()
     {
-        int cubeNumber = Game.Instance.CubeNumber;
-        int halfCubeNum = cubeNumber / 2;
-        Vector3 originPosition = Game.Instance.OriginPosition;
-        Vector3 _cubePrefabScale = _cubePrefab.transform.localScale;
+        Vector3 cubePrefabScale = _cubePrefab.transform.localScale;
 
         // make arrows slightly higher
-        float posY = originPosition.y + (halfCubeNum + 1) * _cubePrefabScale.y;
+        float posY = _originPosition.y + cubePrefabScale.y;
 
         // The far and near is related to camera
-        float farthestX = originPosition.x + (halfCubeNum - 1) * _cubePrefabScale.x;
-        float farthestZ = originPosition.z - (halfCubeNum - 1) * _cubePrefabScale.z;
 
-        float nearestX = originPosition.x - (halfCubeNum + 1) * _cubePrefabScale.x;
-        float nearestZ = originPosition.z + (halfCubeNum + 1) * _cubePrefabScale.z;
+        float nearestX = _originPosition.x - _cubeNumber * cubePrefabScale.x;
+        float nearestZ = _originPosition.z + _cubeNumber * cubePrefabScale.z;
 
-        Vector3 leftArrowPosition = new Vector3(farthestX + _cubePrefabScale.x, posY, nearestZ);
-        Vector3 rightArrowPosition = new Vector3(nearestX, posY, farthestZ - _cubePrefabScale.x);
+        Vector3 leftArrowPosition = new Vector3(_originPosition.x + cubePrefabScale.x, posY, nearestZ);
+        Vector3 rightArrowPosition = new Vector3(nearestX, posY, _originPosition.z - cubePrefabScale.x);
 
         // TODO: is this kind of Instantiate a gameobject -> init its script process right?
         // If so, maybe axis should also be inited here?
         _leftArrow = Instantiate(LeftArrowPrefab, leftArrowPosition, Quaternion.identity, gameObject.transform);
         _rightArrow = Instantiate(RightArrowPrefab, rightArrowPosition, Quaternion.identity, gameObject.transform);
 
+        GameObject farEndMarker = new GameObject("FarEndMarker");
+        farEndMarker.transform.position = new Vector3(_originPosition.x, posY, _originPosition.z);
+        farEndMarker.transform.SetParent(transform);
+
         GameObject leftArrowNearEndMarker = new GameObject("LeftArrowNearEndMarker");
         leftArrowNearEndMarker.transform.position = _leftArrow.transform.position;
-        leftArrowNearEndMarker.transform.SetParent(transform);
+        leftArrowNearEndMarker.transform.SetParent(farEndMarker.transform);
 
         GameObject rightArrowNearEndMarker = new GameObject("RightArrowNearEndMarker");
         rightArrowNearEndMarker.transform.position = _rightArrow.transform.position;
-        rightArrowNearEndMarker.transform.SetParent(transform);
-
-        GameObject farEndMarker = new GameObject("FarEndMarker");
-        farEndMarker.transform.position = new Vector3(farthestX, posY, farthestZ);
-        farEndMarker.transform.SetParent(transform);
+        rightArrowNearEndMarker.transform.SetParent(farEndMarker.transform);
 
         _leftArrow.GetComponent<Arrow>().NearEndMarker = leftArrowNearEndMarker.transform;
         _leftArrow.GetComponent<Arrow>().FarEndMarker = farEndMarker.transform;
+        _leftArrow.transform.SetParent(farEndMarker.transform);
 
         _rightArrow.GetComponent<Arrow>().NearEndMarker = rightArrowNearEndMarker.transform;
         _rightArrow.GetComponent<Arrow>().FarEndMarker = farEndMarker.transform;
+        _rightArrow.transform.SetParent(farEndMarker.transform);
+
+        _allArrows = new List<GameObject> { _leftArrow, _rightArrow };
     }
 
     public void ResetCubes()
@@ -217,22 +202,16 @@ public class CubeManager : MonoBehaviour
 
     public void InitCubes()
     {
-        Vector3 originPosition = Game.Instance.OriginPosition;
-        int cubeNumber = Game.Instance.CubeNumber;
-        Vector3 _cubePrefabScale = _cubePrefab.transform.localScale;
-
+        Vector3 cubePrefabScale = _cubePrefab.transform.localScale;
         _allCubes = new List<GameObject>();
 
-        for (int x = 0; x < cubeNumber; x++)
+        for (int x = 0; x < _cubeNumber; x++)
         {
-            for (int y = 0; y < cubeNumber; y++)
+            for (int y = 0; y < _cubeNumber; y++)
             {
-                for (int z = 0; z < cubeNumber; z++)
+                for (int z = 0; z < _cubeNumber; z++)
                 {
-                    Vector3 cubePosition = new Vector3(originPosition.x +(x - cubeNumber / 2) * _cubePrefabScale.x,
-                        originPosition.y + (y - cubeNumber / 2) * _cubePrefabScale.y,
-                        originPosition.z + (z - cubeNumber / 2) * _cubePrefabScale.z);
-
+                    Vector3 cubePosition = new Vector3(-x * cubePrefabScale.x, -y * cubePrefabScale.y, z * cubePrefabScale.z) + _originPosition;
                     GameObject cube = Instantiate(_cubePrefab, cubePosition, Quaternion.identity, this.gameObject.transform);
                     _allCubes.Add(cube);
                     cube.GetComponent<Cube>().XIndex = x;
@@ -258,5 +237,22 @@ public class CubeManager : MonoBehaviour
             Game.Instance.BlockInput = false;
             UI.Instance.InvokeCheckCubes(IsCorrect());
         });
+    }
+
+    public void SelectArrow(GameObject anArrow)
+    {
+        foreach(var arrow in _allArrows)
+        {
+            if (arrow != anArrow)
+                arrow.SetActive(false);
+        }
+    }
+
+    public void UnSelectArrow()
+    {
+        foreach (var arrow in _allArrows)
+        {
+            arrow.SetActive(true);
+        }
     }
 }
